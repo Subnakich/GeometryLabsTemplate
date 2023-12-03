@@ -208,7 +208,7 @@ void RenderGui(sf::RenderWindow& window)
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 800), "Lab 2");
+	sf::RenderWindow window(sf::VideoMode(800, 800), "Lab 3");
 	window.setFramerateLimit(60);
 	if (!ImGui::SFML::Init(window))
 	{
