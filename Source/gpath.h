@@ -14,7 +14,7 @@ public:
 
 	void Create(const sf::Vector2u &size);
 	void Clear();
-	void FindPath(const RFuncSprite &rFuncSprite, sf::Vector2f point, sf::Color color);
+	void FindPath(const RFuncSprite &rFuncSprite, sf::Vector2f point, sf::Color color, const int descent = 1);
 
 private:
 

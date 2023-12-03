@@ -19,17 +19,14 @@ vector4s::Vector4f RFuncSprite::getVector(const std::function<float(const sf::Ve
 										  const sf::FloatRect &subSpace, const unsigned int x,
 										  const unsigned int y)
 { 
-
 	sf::Vector3f point1 = getSpacePoint(rfunc, subSpace, x, y);
 	sf::Vector3f point2 = getSpacePoint(rfunc, subSpace, x + 1, y);
 	sf::Vector3f point3 = getSpacePoint(rfunc, subSpace, x, y + 1);
-
-
-	float a = point1.y * (point2.z - point3.z) + point2.y * (point3.z - point1.z) + point3.y * (point1.z - point2.z);
-	float b = point1.x * (point2.z - point3.z) + point2.x * (point3.z - point1.z) + point3.x * (point1.z - point2.z);
-	float c = point1.x * (point2.y - point3.y) + point2.x * (point3.y - point1.y) + point3.x * (point1.y - point2.y);
-	float d = point1.x * (point2.y * point3.z - point3.y * point2.z) +
-		point2.x * (point3.y * point1.z - point1.y * point3.z) + point3.x * (point1.y * point2.z - point2.y * point1.z);
+	float a = ((point2.y * point3.z - point2.z * point3.y) - (point1.y * point3.z - point1.z * point3.y) + (point1.y * point2.z - point1.z * point2.y));
+	float b = -((point2.x * point3.z - point2.z * point3.x) - (point1.x * point3.z - point1.z * point3.x) + (point1.x * point2.z - point1.z * point2.x));
+	float c = ((point2.x * point3.y - point2.y * point3.x) - (point1.x * point3.y - point1.y * point3.x) + (point1.x * point2.y - point1.y * point2.x));
+	float d = -(point1.z * (point2.x * point3.y - point2.y * point3.x) - point2.z * (point1.x * point3.y - point1.y * point3.x) +
+				point3.z * (point1.x * point2.y - point1.y * point2.x));
 
 	float len = sqrt(a * a + b * b + c * c + d * d);
 
@@ -42,7 +39,7 @@ vector4s::Vector4f RFuncSprite::getVector(const std::function<float(const sf::Ve
 
 	vector4s::Vector4f ci = (n + 1.f) / 2.f;
 
-	return ci;
+	return n;
 }
 
 
@@ -54,10 +51,10 @@ void RFuncSprite::DrawRFunc(const std::function<float(const sf::Vector2f &)> &rf
 	{
 		for (unsigned y = 0; y < _image.getSize().y; ++y)
 		{
-			
-			vector4s::Vector4f ci = getVector(rfunc, subSpace, x, y);
-			_cx[x][y] = ci.x;
-			_cy[x][y] = ci.y;
+			vector4s::Vector4f n = getVector(rfunc, subSpace, x, y);
+			vector4s::Vector4f ci = (n + 1.f) / 2.f;
+			_cx[x][y] = n.x;
+			_cy[x][y] = n.y;
 
 			sf::Uint8 color_new_r;
 			sf::Uint8 color_new_g;

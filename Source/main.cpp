@@ -24,6 +24,8 @@ int mode = 1;
 bool renderingModeChanged = true;
 bool renderingColorChanged = true;
 
+int renderingDirMode = 1;
+
 sf::Color color;
 
 RFuncSprite rFuncSprite;
@@ -69,7 +71,7 @@ void HandleUserInput(sf::RenderWindow& window, const sf::Event& event)
 		break;
 	case sf::Event::MouseButtonPressed:
 	{
-		sf::Vector2f mousePos = sf::Vector2f(event.mouseButton.x, window.getSize().y - event.mouseButton.y); 
+		sf::Vector2f mousePos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y); 
 
 		sf::Color invertedColor;
 		if (color != sf::Color::White)
@@ -81,7 +83,7 @@ void HandleUserInput(sf::RenderWindow& window, const sf::Event& event)
 			invertedColor = sf::Color::Red;
 		}
 		
-		gPath.FindPath(rFuncSprite, mousePos, invertedColor);
+		gPath.FindPath(rFuncSprite, mousePos, invertedColor, renderingDirMode);
 	}
 	break;
 	default:
@@ -126,6 +128,7 @@ void Render(sf::RenderWindow& window)
 		
 		renderingColorChanged = false;
 	}
+	
 	window.draw(rFuncSprite);
 	window.draw(gPath);
 }
@@ -193,8 +196,18 @@ void RenderGui(sf::RenderWindow& window)
 	}
 
 	ImGui::Separator();
-	if (ImGui::CollapsingHeader("Path cleaner"))
+	if (ImGui::CollapsingHeader("Path settings"))
 	{
+		if (ImGui::Button("Gradient ascent"))
+		{
+			gPath.Clear();
+			renderingDirMode = -1;
+		}
+		if (ImGui::Button("Gradient descent"))
+		{
+			gPath.Clear();
+			renderingDirMode = 1;
+		}
 		if (ImGui::Button("Clear!"))
 		{
 			gPath.Clear();
@@ -216,7 +229,6 @@ int main()
 		return -1;
 	}
 
-	
 	rFuncSprite.Create(sf::Vector2u(800, 800));
 	gPath.Create(sf::Vector2u(800, 800));
 
