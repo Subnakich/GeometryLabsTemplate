@@ -13,7 +13,7 @@
 #include "SFML/System/Clock.hpp"
 #include "SFML/Window/Event.hpp"
 
-float amplitude = 1;
+float amplitude = 200;
 int frequency = 5;
 int mode = 1; 
 
@@ -138,27 +138,22 @@ void Render(sf::RenderWindow& window)
 	switch (mode)
 	{
 	case 1:
-		amplitude = 200;
+		
 		RenderSinFunction(window, amplitude, frequency);
 		break;
 	case 2:
-		amplitude = 200;
 		RenderCosFunction(window, amplitude, frequency);
 		break;
 	case 3:
-		amplitude = 0.01;
 		RenderSquareFunction(window, amplitude);
 		break;
 	case 4:
-		amplitude = 10;
 		RenderSquareRootFunction(window, amplitude);
 		break;
 	case 5:
-		amplitude = 1;
 		RenderAbsoluteValueFunction(window, amplitude);
 		break;
 	default:
-		amplitude = 200;
 		RenderSinFunction(window, amplitude, frequency);
 		break;
 	}
@@ -171,26 +166,31 @@ void RenderGui(sf::RenderWindow& window)
 	if (ImGui::Button("Sin"))
 	{
 		mode = 1;
+		amplitude = 200;
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Cos"))
 	{
 		mode = 2;
+		amplitude = 200;
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Square"))
 	{
 		mode = 3;
+		amplitude = 0.01;
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("SquareRoot"))
 	{
 		mode = 4;
+		amplitude = 10;
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Abs"))
 	{
 		mode = 5;
+		amplitude = 1;
 	}
 
 	switch (mode)
