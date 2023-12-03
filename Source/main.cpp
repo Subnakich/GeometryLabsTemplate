@@ -26,6 +26,11 @@ bool renderingColorChanged = true;
 sf::Color color;
 
 RFuncSprite rFuncSprite;
+RFuncSprite rFuncSprite1;
+RFuncSprite rFuncSprite2;
+RFuncSprite rFuncSprite3;
+RFuncSprite rFuncSprite4;
+
 sf::FloatRect floatRect(-10, -10, 20, 15);
 
 float RAnd(float w1, float w2) 
@@ -96,17 +101,45 @@ void Render(sf::RenderWindow& window)
 		case 4:
 			rFuncSprite.DrawRFunc(&myFunc, floatRect, mode, color);
 			break;
+		case 5:
+			rFuncSprite1.DrawRFunc(&myFunc, floatRect, 1, color);
+			rFuncSprite2.DrawRFunc(&myFunc, floatRect, 2, color);
+			rFuncSprite3.DrawRFunc(&myFunc, floatRect, 3, color);
+			rFuncSprite4.DrawRFunc(&myFunc, floatRect, 4, color);
+			break;
 		}
 
 		renderingModeChanged = false;
 	}
 	if (renderingColorChanged)
 	{
-		rFuncSprite.DrawRFunc(&myFunc, floatRect, mode, color);
+		if (mode == 5)
+		{
+			rFuncSprite1.DrawRFunc(&myFunc, floatRect, 1, color);
+			rFuncSprite2.DrawRFunc(&myFunc, floatRect, 2, color);
+			rFuncSprite3.DrawRFunc(&myFunc, floatRect, 3, color);
+			rFuncSprite4.DrawRFunc(&myFunc, floatRect, 4, color);
+		}
+		else
+		{
+			rFuncSprite.DrawRFunc(&myFunc, floatRect, mode, color);
+		}
+		
 		
 		renderingColorChanged = false;
 	}
-	window.draw(rFuncSprite);
+	if (mode == 5)
+	{
+		window.draw(rFuncSprite1);
+		window.draw(rFuncSprite2);
+		window.draw(rFuncSprite3);
+		window.draw(rFuncSprite4);
+	}
+	else
+	{
+		window.draw(rFuncSprite);
+	}
+	
 }
 
 void RenderGui(sf::RenderWindow& window)
@@ -137,6 +170,12 @@ void RenderGui(sf::RenderWindow& window)
 		if (ImGui::Button("M OW"))
 		{
 			mode = 4;
+			renderingModeChanged = true;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("All"))
+		{
+			mode = 5;
 			renderingModeChanged = true;
 		}
 	}
@@ -188,6 +227,15 @@ int main()
 
 	
 	rFuncSprite.Create(sf::Vector2u(800, 800));
+
+	rFuncSprite1.Create(sf::Vector2u(400, 400));
+	rFuncSprite2.Create(sf::Vector2u(400, 400));
+	rFuncSprite3.Create(sf::Vector2u(400, 400));
+	rFuncSprite4.Create(sf::Vector2u(400, 400));
+
+	rFuncSprite2.setPosition(sf::Vector2f(400, 0));
+	rFuncSprite3.setPosition(sf::Vector2f(0, 400));
+	rFuncSprite4.setPosition(sf::Vector2f(400, 400));
 
 	color.r = static_cast<sf::Uint8>(255.f);
 	color.g = static_cast<sf::Uint8>(255.f);
