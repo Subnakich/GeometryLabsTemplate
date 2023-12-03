@@ -15,6 +15,7 @@
 
 #include "vector4.hpp"
 #include "RFuncSprite.h"
+#include "gpath.h"
 
 
 float amplitude = 1;
@@ -26,6 +27,8 @@ bool renderingColorChanged = true;
 sf::Color color;
 
 RFuncSprite rFuncSprite;
+gpath gPath;
+
 sf::FloatRect floatRect(-10, -10, 20, 15);
 
 float RAnd(float w1, float w2) 
@@ -64,6 +67,23 @@ void HandleUserInput(sf::RenderWindow& window, const sf::Event& event)
 	case sf::Event::Closed:
 		window.close();
 		break;
+	case sf::Event::MouseButtonPressed:
+	{
+		sf::Vector2f mousePos = sf::Vector2f(event.mouseButton.x, window.getSize().y - event.mouseButton.y); 
+
+		sf::Color invertedColor;
+		if (color != sf::Color::White)
+		{
+			invertedColor = sf::Color(255 - color.r, 255 - color.g, 255 - color.b);
+		}
+		else
+		{
+			invertedColor = sf::Color::Red;
+		}
+		
+		gPath.FindPath(rFuncSprite, mousePos, invertedColor);
+	}
+	break;
 	default:
 		break;
 	}
@@ -107,6 +127,7 @@ void Render(sf::RenderWindow& window)
 		renderingColorChanged = false;
 	}
 	window.draw(rFuncSprite);
+	window.draw(gPath);
 }
 
 void RenderGui(sf::RenderWindow& window)
@@ -172,6 +193,15 @@ void RenderGui(sf::RenderWindow& window)
 	}
 
 	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Path cleaner"))
+	{
+		if (ImGui::Button("Clear!"))
+		{
+			gPath.Clear();
+		}
+	}
+
+	ImGui::Separator();
 
 	ImGui::End();
 }
@@ -188,11 +218,11 @@ int main()
 
 	
 	rFuncSprite.Create(sf::Vector2u(800, 800));
+	gPath.Create(sf::Vector2u(800, 800));
 
 	color.r = static_cast<sf::Uint8>(255.f);
 	color.g = static_cast<sf::Uint8>(255.f);
 	color.b = static_cast<sf::Uint8>(255.f);
-	//rFuncSprite.DrawRFunc(&myFunc, floatRect, mode);
 
 	sf::Clock deltaClock;
 	while (window.isOpen())

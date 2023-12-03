@@ -3,6 +3,9 @@
 
 void RFuncSprite::Create(const sf::Vector2u &size)
 {
+	_cx = std::vector<std::vector<float>>(size.x, std::vector<float>(size.y, 0));
+	_cy = std::vector<std::vector<float>>(size.x, std::vector<float>(size.y, 0));
+
 	_image.create(size.x, size.y, sf::Color::Cyan);
 	_texture.loadFromImage(_image);
 	setTexture(_texture);
@@ -12,7 +15,21 @@ void RFuncSprite::SaveToFile(const std::string &str) {
 	_image.saveToFile(str + ".jpg");
 }
 
-vector4s::Vector4f RFuncSprite::getPvVector(float a, float b, float c, float d) { 
+vector4s::Vector4f RFuncSprite::getVector(const std::function<float(const sf::Vector2f &)> &rfunc,
+										  const sf::FloatRect &subSpace, const unsigned int x,
+										  const unsigned int y)
+{ 
+
+	sf::Vector3f point1 = getSpacePoint(rfunc, subSpace, x, y);
+	sf::Vector3f point2 = getSpacePoint(rfunc, subSpace, x + 1, y);
+	sf::Vector3f point3 = getSpacePoint(rfunc, subSpace, x, y + 1);
+
+
+	float a = point1.y * (point2.z - point3.z) + point2.y * (point3.z - point1.z) + point3.y * (point1.z - point2.z);
+	float b = point1.x * (point2.z - point3.z) + point2.x * (point3.z - point1.z) + point3.x * (point1.z - point2.z);
+	float c = point1.x * (point2.y - point3.y) + point2.x * (point3.y - point1.y) + point3.x * (point1.y - point2.y);
+	float d = point1.x * (point2.y * point3.z - point3.y * point2.z) +
+		point2.x * (point3.y * point1.z - point1.y * point3.z) + point3.x * (point1.y * point2.z - point2.y * point1.z);
 
 	float len = sqrt(a * a + b * b + c * c + d * d);
 
@@ -21,8 +38,14 @@ vector4s::Vector4f RFuncSprite::getPvVector(float a, float b, float c, float d) 
 	float nz = c / len;
 	float nw = d / len;
 
-	return vector4s::Vector4f(nx, ny, nz, nw);
+	vector4s::Vector4f n = vector4s::Vector4f(nx, ny, nz, nw);
+
+	vector4s::Vector4f ci = (n + 1.f) / 2.f;
+
+	return ci;
 }
+
+
 
 void RFuncSprite::DrawRFunc(const std::function<float(const sf::Vector2f &)> &rfunc, const sf::FloatRect &subSpace,
 							const int mode, const sf::Color color_new)
@@ -31,26 +54,10 @@ void RFuncSprite::DrawRFunc(const std::function<float(const sf::Vector2f &)> &rf
 	{
 		for (unsigned y = 0; y < _image.getSize().y; ++y)
 		{
-			sf::Vector3f point1 = getSpacePoint(rfunc, subSpace, x, y);
-			sf::Vector3f point2 = getSpacePoint(rfunc, subSpace, x + 1, y);
-			sf::Vector3f point3 = getSpacePoint(rfunc, subSpace, x, y + 1);
-
-
-			float a = point1.y * (point2.z - point3.z) + point2.y * (point3.z - point1.z) +
-				point3.y * (point1.z - point2.z);
-			float b =
-				point1.x * (point2.z - point3.z) + point2.x * (point3.z - point1.z) + point3.x * (point1.z - point2.z);
-			float c =
-				point1.x * (point2.y - point3.y) + point2.x * (point3.y - point1.y) + point3.x * (point1.y - point2.y);
-			float d = point1.x * (point2.y * point3.z - point3.y * point2.z) +
-				point2.x * (point3.y * point1.z - point1.y * point3.z) +
-				point3.x * (point1.y * point2.z - point2.y * point1.z);
-
-				
-			vector4s::Vector4f n = getPvVector(a, b, c, d);
 			
-			vector4s::Vector4f ci = (n + 1.f) / 2.f;
-
+			vector4s::Vector4f ci = getVector(rfunc, subSpace, x, y);
+			_cx[x][y] = ci.x;
+			_cy[x][y] = ci.y;
 
 			sf::Uint8 color_new_r;
 			sf::Uint8 color_new_g;
@@ -61,11 +68,13 @@ void RFuncSprite::DrawRFunc(const std::function<float(const sf::Vector2f &)> &rf
 				color_new_r = static_cast<sf::Uint8>(color_new.r * ci.x);
 				color_new_g = static_cast<sf::Uint8>(color_new.g * ci.x);
 				color_new_b = static_cast<sf::Uint8>(color_new.b * ci.x);
+				
 				break;
 			case 2:
 				color_new_r = static_cast<sf::Uint8>(color_new.r * ci.y);
 				color_new_g = static_cast<sf::Uint8>(color_new.g * ci.y);
 				color_new_b = static_cast<sf::Uint8>(color_new.b * ci.y);
+				
 				break;
 			case 3:
 				color_new_r = static_cast<sf::Uint8>(color_new.r * ci.z);

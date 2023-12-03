@@ -17,11 +17,19 @@ public:
 
 	void SaveToFile(const std::string &str);
 
+	const std::vector<std::vector<float>> &cx() const { return _cx; }
+	const std::vector<std::vector<float>> &cy() const { return _cy; }
+
 private:
+	
+	std::vector<std::vector<float>> _cx;
+	std::vector<std::vector<float>> _cy;
 
-	vector4s::Vector4f getPvVector(float a, float b, float c, float d);
+	vector4s::Vector4f getVector(const std::function<float(const sf::Vector2f &)> &rfunc, const sf::FloatRect &subSpace,
+								 const unsigned int x, const unsigned int y);
 
-	sf::Vector3f getSpacePoint(const std::function<float(const sf::Vector2f &)> &rfunc, const sf::FloatRect &subSpace,
+	sf::Vector3f getSpacePoint(const std::function<float(const sf::Vector2f &)> &rfunc,
+									 const sf::FloatRect &subSpace,
 							   float x, float y);
 
 	sf::Texture _texture;
