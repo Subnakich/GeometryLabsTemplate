@@ -34,17 +34,15 @@ void RFuncSprite::DrawRFunc(const std::function<float(const sf::Vector2f &)> &rf
 			sf::Vector3f point1 = getSpacePoint(rfunc, subSpace, x, y);
 			sf::Vector3f point2 = getSpacePoint(rfunc, subSpace, x + 1, y);
 			sf::Vector3f point3 = getSpacePoint(rfunc, subSpace, x, y + 1);
-
-
-			float a = point1.y * (point2.z - point3.z) + point2.y * (point3.z - point1.z) +
-				point3.y * (point1.z - point2.z);
-			float b =
-				point1.x * (point2.z - point3.z) + point2.x * (point3.z - point1.z) + point3.x * (point1.z - point2.z);
-			float c =
-				point1.x * (point2.y - point3.y) + point2.x * (point3.y - point1.y) + point3.x * (point1.y - point2.y);
-			float d = point1.x * (point2.y * point3.z - point3.y * point2.z) +
-				point2.x * (point3.y * point1.z - point1.y * point3.z) +
-				point3.x * (point1.y * point2.z - point2.y * point1.z);
+			float a = ((point2.y * point3.z - point2.z * point3.y) - (point1.y * point3.z - point1.z * point3.y) +
+					   (point1.y * point2.z - point1.z * point2.y));
+			float b = -((point2.x * point3.z - point2.z * point3.x) - (point1.x * point3.z - point1.z * point3.x) +
+						(point1.x * point2.z - point1.z * point2.x));
+			float c = ((point2.x * point3.y - point2.y * point3.x) - (point1.x * point3.y - point1.y * point3.x) +
+					   (point1.x * point2.y - point1.y * point2.x));
+			float d = -(point1.z * (point2.x * point3.y - point2.y * point3.x) -
+						point2.z * (point1.x * point3.y - point1.y * point3.x) +
+						point3.z * (point1.x * point2.y - point1.y * point2.x));
 
 				
 			vector4s::Vector4f n = getPvVector(a, b, c, d);
